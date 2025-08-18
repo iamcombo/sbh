@@ -1,8 +1,14 @@
 package com.example.springboothomework.entity;
 
+import com.example.springboothomework.controller.request.TodoUpdateRequest;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "todos")
 public class Todo {
@@ -35,66 +41,10 @@ public class Todo {
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
     }
-    
-    // Constructors
-    public Todo() {
-    }
-    
-    public Todo(String title, String description) {
-        this.title = title;
-        this.description = description;
-    }
-    
-    // Getters and Setters
-    public Long getId() {
-        return id;
-    }
-    
-    public void setId(Long id) {
-        this.id = id;
-    }
-    
-    public String getTitle() {
-        return title;
-    }
-    
-    public void setTitle(String title) {
-        this.title = title;
-    }
-    
-    public String getDescription() {
-        return description;
-    }
-    
-    public void setDescription(String description) {
-        this.description = description;
-    }
-    
-    public boolean isCompleted() {
-        return completed;
-    }
-    
-    public void setCompleted(boolean completed) {
-        this.completed = completed;
-    }
-    
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-    
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-    
-    @Override
-    public String toString() {
-        return "Todo{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", completed=" + completed +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                '}';
+
+    // update completed
+    public Todo updateCompleted(TodoUpdateRequest body) {
+        this.completed = body.getCompleted();
+        return this;
     }
 }

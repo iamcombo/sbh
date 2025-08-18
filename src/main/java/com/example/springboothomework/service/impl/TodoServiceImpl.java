@@ -1,8 +1,12 @@
 package com.example.springboothomework.service.impl;
 
+import com.example.springboothomework.controller.request.TodoCreateRequest;
+import com.example.springboothomework.controller.request.TodoUpdateRequest;
 import com.example.springboothomework.entity.Todo;
+import com.example.springboothomework.exception.TodoNotFoundException;
 import com.example.springboothomework.repository.TodoRepository;
 import com.example.springboothomework.service.TodoService;
+import jakarta.transaction.Transactional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -19,8 +23,7 @@ public class TodoServiceImpl implements TodoService {
 
     @Override
     public ResponseEntity<List<Todo>> findAll() {
-        List<Todo> todos = todoRepository.findAll();
-        return ResponseEntity.ok(todos);
+        return ResponseEntity.ok().body(todoRepository.findAll());
     }
 
     @Override
@@ -30,30 +33,33 @@ public class TodoServiceImpl implements TodoService {
         if (todo.isPresent()) {
             return ResponseEntity.ok(todo.get());
         } else {
-            return ResponseEntity.notFound().build();
+            throw new TodoNotFoundException(id, "/api/todos/" + id);
         }
     }
 
     @Override
-    public ResponseEntity<Todo> save(Todo todo) {
-        Todo saved = todoRepository.save(todo);
-        return ResponseEntity.ok(saved);
+    public ResponseEntity<Todo> save(TodoCreateRequest body) {
+        final var result = todoRepository.save(body.toTodoEntity());
+        return ResponseEntity.status(201).body(result);
     }
 
     @Override
-    public ResponseEntity<Todo> update(Long id, Todo todo) {
+    @Transactional
+    public ResponseEntity<Todo> update(Long id, TodoUpdateRequest body) {
         Optional<Todo> existingTodo = todoRepository.findById(id);
 
         if (existingTodo.isPresent()) {
-            Todo updated = todoRepository.save(todo);
-            return ResponseEntity.ok(updated);
+            Todo updated = existingTodo.get().updateCompleted(body);
+            return ResponseEntity.ok(todoRepository.save(updated));
         } else {
-            return ResponseEntity.notFound().build();
+            throw new TodoNotFoundException(id, "/api/todos/" + id);
         }
     }
 
     @Override
-    public void deleteById(Long id) {
+    @Transactional
+    public ResponseEntity<Todo> deleteById(Long id) {
         todoRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }
