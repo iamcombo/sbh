@@ -1,5 +1,6 @@
 package com.example.springboothomework.controller;
 
+import com.example.springboothomework.annotation.AuditFilter;
 import com.example.springboothomework.controller.request.TodoCreateRequest;
 import com.example.springboothomework.controller.request.TodoUpdateRequest;
 import com.example.springboothomework.entity.Todo;
@@ -19,26 +20,31 @@ public class TodoController {
         this.todoService = todoService;
     }
 
+    @AuditFilter
     @GetMapping("/list")
     public ResponseEntity<List<Todo>> list() {
         return todoService.findAll();
     }
 
+    @AuditFilter
     @GetMapping("/detail/{id}")
     public ResponseEntity<Todo> detail(@PathVariable("id") Long id) {
         return todoService.findById(id);
     }
 
+    @AuditFilter
     @PostMapping("/create")
     public ResponseEntity<Todo> save(@Valid @RequestBody TodoCreateRequest todo) {
         return todoService.save(todo);
     }
 
+    @AuditFilter
     @PutMapping("/update/{id}")
     public ResponseEntity<Todo> update(@PathVariable Long id, @RequestBody TodoUpdateRequest body) {
         return todoService.update(id, body);
     }
 
+    @AuditFilter
     @DeleteMapping("/delete/{id}")
     public void delete(@PathVariable Long id) {
         todoService.deleteById(id);
