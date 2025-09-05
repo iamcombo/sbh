@@ -15,4 +15,16 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleTodoNotFoundException(TodoNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.toMap());
     }
+
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<?> handleBadRequestException(BadRequestException ex) {
+        Map<String, String> message = Map.of("message", ex.getMessage());
+        return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<?> handleUnauthorizedException(UnauthorizedException ex) {
+        Map<String, String> message = Map.of("message", ex.getMessage());
+        return new ResponseEntity<>(message, HttpStatus.UNAUTHORIZED);
+    }
 }
